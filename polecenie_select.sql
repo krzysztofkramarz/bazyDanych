@@ -96,17 +96,14 @@ SELECT firstname, lastname ,'Identification number:', employeeid FROM employees
 -- 30 Kolumny wyliczane - operacje na liczbach
 select unitprice * 1.23 as BRUTTO, unitprice as NETTO from products
 -- 31 Kolumny wyliczane - operacje na napisach
-SELECT firstname + ‘ ‘ + lastname as imie_nazwisko
+SELECT firstname + '  '  + lastname as imie_nazwisko from [employees]
 
 --32.select count(*) from suppliers having  (select count(*), region from suppliers group  by region)
 select count(*), region from suppliers group  by region order by 1 desc
 select count(*) from suppliers
 
- 
- 
- 
- 
- 
+--334SELECT firstname, lastname
+SELECT firstname, lastname ,'Identification number:', employeeid FROM employees
 
 SELECT * FROM orders where orderdate between '07/05/96' and '1996-07-08' or customerid like '_o%'
 SELECT * FROM orders where orderdate like ('%-07%')
