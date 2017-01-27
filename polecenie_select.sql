@@ -77,7 +77,12 @@ select companyname, city from customers  where country IN ( 'Japan', 'Italy')
 --22. Napisz instrukcję select tak aby wybrać numer zlecenia, datę zamówienia, numer klienta 
 -- dla wszystkich niezrealizowanych jeszcze zleceń, dla których krajem odbiorcy jest Argentyna
 select orderid, shippeddate, customerid from orders where (ShippedDate is null or requireddate  > GETDATE()) and ShipCountry ='Argentyna' 
---23 
+--23 --Napisz instrukcję select tak aby wybrać numer zlecenia, datę zamówienia, numer klienta dla wszystkich
+--niezrealizowanych jeszcze zleceń, dla których krajem odbiorcy jest Argentyna
+
+SELECT OrderID,  CustomerID, ShipCountry, OrderDate,  ShippedDate as sh, GETDATE(), DATEDIFF(yyyy, OrderDate, GETDATE() )  FROM Orders 
+WHERE ShipCountry = 'Argentina' AND  (ShippedDate > GETDATE() OR ShippedDate is  null ) ORDER BY ShippedDate asc
+
 SELECT productid, productname, categoryid, unitprice FROM products ORDER BY categoryid desc, unitprice DESC
 -- 24. Wybierz nazwy i kraje wszystkich klientów, wyniki posortuj według kraju, w ramach danego kraju nazwy firm posortuj
 -- alfabetycznie

@@ -77,7 +77,7 @@ Go
 -- 9. Wybierz nazwy i ceny produktów (baza northwind) o cenie jednostkowej pomiędzy 20.00 a 30.00, dla każdego produktu podaj
 -- dane adresowe dostawcy
 use Northwind 
-SELECT ProductName, UnitPrice, CompanyName, Address+' '+City+' '+PostalCode+' '+Country AS Adres FROM Products AS p 
+SELECT LEN(ProductName), UnitPrice, SUBSTRING(CompanyName,1,3), Address+' '+UPPER(City)+' '+PostalCode+' '+LOWER(Country) AS Adres FROM Products AS p 
 JOIN Suppliers AS s ON p.SupplierID = s.SupplierID
 WHERE UnitPrice BETWEEN 20.00 AND 30.00
 -- a tutaj udąło mi się w końcu zliczyć ilość wyników . Nie może być ORDER BY w takim podzapytaniu
@@ -130,5 +130,61 @@ JOIN [Order Details] AS od ON od.productid = p.productid
 JOIN Categories AS c ON p.CategoryId = c.CategoryId
 WHERE CategoryName = 'Confections'
 
-GO
 
+-- 18. Wybierz nazwy i numery telefonów klientów , którzy w 1997 roku kupowali towary firmy 'Ma Maison'
+SELECT DISTINCT c.CompanyName AS klient, c.Phone AS telefon, DATEPART(yy, o.OrderDate), s.CompanyName AS dostawca  FROM Customers AS c 
+JOIN Orders AS o ON c.CustomerID = o.CustomerID
+JOIN "Order Details" AS od ON od.OrderID = o.OrderID
+JOIN Products AS p ON p.ProductID = od.ProductID
+JOIN Suppliers AS s ON p.SupplierID = s.SupplierID
+WHERE DATEPART(yyyy, o.OrderDate) = 1997 AND s.CompanyName = 'Ma Maison' Order BY c.CompanyName DESC
+
+--- A JAK POLICZYĆ?????????????????????
+-- ????????????????????????????
+SELECT COUNT(*) FROM (SELECT DISTINCT c.CompanyName AS klient, c.Phone AS telefon, DATEPART(yy, o.OrderDate), s.CompanyName AS dostawca  FROM Customers AS c 
+JOIN Orders AS o ON c.CustomerID = o.CustomerID
+JOIN "Order Details" AS od ON od.OrderID = o.OrderID
+JOIN Products AS p ON p.ProductID = od.ProductID
+JOIN Suppliers AS s ON p.SupplierID = s.SupplierID
+WHERE DATEPART(yyyy, o.OrderDate) = 1997 AND s.CompanyName = 'Ma Maison')  t 
+
+SELECT COUNT(*) FROM Suppliers WHERE ContactTitle = 'Marketing Manager'
+
+SELECT COUNT(ContactTitle), ContactTitle FROM Suppliers s GROUP BY ContactTitle
+
+
+-- 18. Wybierz nazwy i numery telefonów klientów , którym w 1997 roku przesyłki dostarczała firma ‘United Package’
+SELECT DISTINCT Customers.CompanyName, Customers.Phone
+FROM Customers
+JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+JOIN Shippers ON Shippers.ShipperID = Orders.ShipVia
+WHERE YEAR(Orders.OrderDate) = 1997 AND Shippers.CompanyName LIKE 'United Package'
+
+
+-- 19. Wybierz nazwy i numery telefonów klientów, którzy kupowali produkty z kategorii ‘Confections’
+SELECT DISTINCT c.CompanyName AS klient, c.Phone AS telefon,cat.CategoryName  FROM Customers AS c 
+JOIN Orders AS o ON c.CustomerID = o.CustomerID
+JOIN "Order Details" AS od ON od.OrderID = o.OrderID
+JOIN Products AS p ON p.ProductID = od.ProductID
+JOIN Categories AS cat ON cat.CategoryID = p.CategoryID 
+WHERE cat.CategoryName  = 'Confections' 
+
+-- 20. Napisz polecenie, które wyświetla listę dzieci będących członkami biblioteki (baza library).
+-- Interesuje nas imię, nazwisko, data urodzenia dziecka i adres zamieszkania dziecka. 
+use library
+
+
+SELECT lastname, firstname, a.street, j.member_no FROM member AS m 
+JOIN adult AS a ON a.member_no = m.member_no 
+JOIN Juvenile AS j ON m.member_no = j.adult_member_no WHERE m.lastname = 'Anderson' ORDER BY 2
+
+-- jak wyzżej z nazwiskami rodziców
+SELECT m.lastname AS nazwisko_dziecka , m.firstname AS imie_dziecka, a.street, j.birth_date, j.member_no, r.lastname AS naz_rodz , r.firstname AS im_rodz, r.member_no FROM member  AS m 
+JOIN Juvenile AS j ON m.member_no = j.member_no
+JOIN adult AS a ON a.member_no = j.adult_member_no
+JOIN Member AS r ON a.member_no = r.member_no
+WHERE m.lastname = 'Anderson' ORDER BY 2
+
+
+
+GO
