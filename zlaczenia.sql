@@ -185,6 +185,62 @@ JOIN adult AS a ON a.member_no = j.adult_member_no
 JOIN Member AS r ON a.member_no = r.member_no
 WHERE m.lastname = 'Anderson' ORDER BY 2
 
+Go
+-- 21. Dla każdego zamówienia podaj łączną liczbę zamówionych jednostek oraz nazwę klienta.
+use Northwind
+SELECT count(*), od.OrderID, SUM(od.Quantity), c.CompanyName FROM [Order details] AS od
+JOIN Orders AS o ON od.OrderID = o.OrderID 
+JOIN Customers AS c ON c.CustomerID = o.CustomerID
+GROUP BY od.OrderId , c.CompanyName
 
+-- 22. Zmodyfikuj poprzedni przykład, aby pokazać tylko takie zamówienia, 
+--dla których łączna liczbę zamówionych jednostek jest większa niż 250
+SELECT count(*), od.OrderID, SUM(od.Quantity) AS suma, c.CompanyName FROM [Order details] AS od
+JOIN Orders AS o ON od.OrderID = o.OrderID 
+JOIN Customers AS c ON c.CustomerID = o.CustomerID
+GROUP BY od.OrderId , c.CompanyName HAVING SUM(od.Quantity) > 250 ORDER BY 3 desc
+
+-- 23. Dla każdego zamówienia podaj łączną wartość tego zamówienia oraz nazwę klienta.
+SELECT od.OrderId as zamowienie, ROUND(SUM(Quantity*UnitPrice*(1-Discount)),3) as suma_zamowienia, c.CompanyName FROM [Order details] AS od
+JOIN Orders AS o ON od.OrderID = o.OrderID 
+JOIN Customers AS c ON c.CustomerID = o.CustomerID
+GROUP BY od.OrderId , c.CompanyName
+
+-- 24. Zmodyfikuj poprzedni przykład, aby pokazać tylko takie zamówienia,
+-- dla których łączna liczba jednostek jest większa niż 250.
+SELECT od.OrderId as zamowienie, ROUND(SUM(Quantity*UnitPrice*(1-Discount)),3) as suma_zamowienia, c.CompanyName FROM [Order details] AS od
+JOIN Orders AS o ON od.OrderID = o.OrderID 
+JOIN Customers AS c ON c.CustomerID = o.CustomerID
+GROUP BY od.OrderId , c.CompanyName HAVING ROUND(SUM(Quantity*UnitPrice*(1-Discount)),3)  > 250
+
+-- 25. Zmodyfikuj poprzedni przykład tak żeby dodać jeszcze imię i nazwisko pracownika obsługującego zamówienie
+SELECT od.OrderId as zamowienie, ROUND(SUM(Quantity*UnitPrice*(1-Discount)),3) as suma_zamowienia, 
+c.CompanyName, e.LastName +' ' + e. firstName as Pracownik FROM [Order details] AS od
+JOIN Orders AS o ON od.OrderID = o.OrderID 
+JOIN Customers AS c ON c.CustomerID = o.CustomerID
+JOIN Employees AS e ON e.EmployeeID = o.EmployeeID
+GROUP BY od.OrderId , c.CompanyName,  e.LastName +' ' + e. firstName
+HAVING ROUND(SUM(Quantity*UnitPrice*(1-Discount)),3)  > 250
+ 
+-- 26. Dla każdej kategorii produktu (nazwa), podaj łączną liczbę
+-- zamówionych przez klientów jednostek towarów.
+use Northwind 
+SELECT c.CategoryName,  SUM(od.Quantity)  FROM Categories AS c 
+JOIN Products AS p ON c.CategoryID = p.CategoryID
+JOIN "Order Details" AS od ON od.ProductID = p.ProductID
+GROUP BY c.CategoryID, c.categoryName
+
+-- 27  Dla każdej kategorii produktu (nazwa), podaj łączną wartość zamówień
+SELECT c.CategoryName, ROUND(SUM(od.Quantity*od.UnitPrice*(1-od.Discount)),3)  FROM Categories AS c 
+JOIN Products AS p ON c.CategoryID = p.CategoryID
+JOIN "Order Details" AS od ON od.ProductID = p.ProductID
+GROUP BY c.CategoryID, c.categoryName
+
+-- 28   Posortuj wyniki w zapytaniu z punktu 2.2 wg:
+--a) łącznej wartości zamówień
+--b) łącznej liczby zamówionych przez klientów jednostek towarów
+
+
+SELECT * FROM Orders
 
 GO
